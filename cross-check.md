@@ -9,7 +9,7 @@
 - [ ] **+10** **PUT** `api/users/{userId}` implemented properly
 - [ ] **+10** **DELETE** `api/users/{userId}` implemented properly
 - [ ] **+6** Users are stored in the form described in the technical requirements
-- [ ] **+6** Value of `port` on which application is running is stored in `.env` file
+- [x] **+6** Value of `port` on which application is running is stored in `.env` file
 
 ## Advanced Scope
 
@@ -26,8 +26,8 @@
 
 ## Forfeits
 
-- **-95% of total task score** any external tools except `nodemon`, `dotenv`, `cross-env`, `typescript`, `ts-node`, `ts-node-dev`, `eslint` and its plugins, `webpack` and its plugins, `prettier` and it's plugins, `uuid`, `@types/*` as well as libraries used for testing
+<!-- - **-95% of total task score** any external tools except `nodemon`, `dotenv`, `cross-env`, `typescript`, `ts-node`, `ts-node-dev`, `eslint` and its plugins, `webpack` and its plugins, `prettier` and it's plugins, `uuid`, `@types/*` as well as libraries used for testing
 - **-30% of total task score** Commits after deadline (except commits that affect only Readme.md, .gitignore, etc.)
 - **-20** Missing PR or its description is incorrect
 - **-20** No separate development branch
-- **-20** Less than 3 commits in the development branch, not including commits that make changes only to `Readme.md` or similar files (`tsconfig.json`, `.gitignore`, `.prettierrc.json`, etc.)
+- **-20** Less than 3 commits in the development branch, not including commits that make changes only to `Readme.md` or similar files (`tsconfig.json`, `.gitignore`, `.prettierrc.json`, etc.) -->

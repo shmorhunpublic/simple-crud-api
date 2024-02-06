@@ -62,7 +62,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"name\": \"Anderew Shmorhun\",\r\n  \"email\": \"andrew.shmorhun@example.com\"\r\n}",
+					"raw": "{\r\n  \"name\": \"Anderew Shmorhun\",\r\n  \"age\": 33,\r\n  \"hobbies\": [\"reading\", \"slipping\", \"dreaming\"]\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -89,7 +89,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"name\": \"User Updated\",\r\n  \"email\": \"updated.user@example.com\"\r\n}",
+					"raw": "{\r\n  \"username\": \"User Updated\",\r\n  \"age\": 99,\r\n  \"hobbies\": [\"running\", \"boxing\", \"coding\"]\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"

@@ -1,7 +1,7 @@
 import * as http from "http";
 import { HttpMethod } from "./utils/http.js";
 import { PATHS } from "./utils/paths.js";
-import { msgs } from "./utils/messages.js";
+import { errors, msgs } from "./utils/messages.js";
 import {
   getAllUsers,
   getUserById,
@@ -12,7 +12,7 @@ import {
 
 const PORT = process.env.PORT || 4000;
 
-const server = http.createServer((req, res) => {
+const server = http.createServer(async (req, res) => {
   const { method, url } = req;
   const requestUrl = new URL(url || "", `http://${req.headers.host}`);
   const path = requestUrl.pathname;
@@ -20,19 +20,25 @@ const server = http.createServer((req, res) => {
 
   res.setHeader("Content-Type", "application/json");
 
-  if (method === HttpMethod.GET && path === PATHS.users) {
-    return getAllUsers(req, res);
-  } else if (method === HttpMethod.GET && path.startsWith(PATHS.users)) {
-    return getUserById(req, res, userId);
-  } else if (method === HttpMethod.POST && path === PATHS.users) {
-    return createUser(req, res);
-  } else if (method === HttpMethod.PUT && path.startsWith(PATHS.users)) {
-    return updateUserById(req, res, userId);
-  } else if (method === HttpMethod.DELETE && path.startsWith(PATHS.users)) {
-    return deleteUserById(req, res, userId);
-  } else {
-    res.writeHead(404);
-    res.end(msgs.ENF);
+  try {
+    if (method === HttpMethod.GET && path === PATHS.users) {
+      await getAllUsers(req, res);
+    } else if (method === HttpMethod.GET && path.startsWith(PATHS.users)) {
+      await getUserById(req, res, userId);
+    } else if (method === HttpMethod.POST && path === PATHS.users) {
+      await createUser(req, res);
+    } else if (method === HttpMethod.PUT && path.startsWith(PATHS.users)) {
+      await updateUserById(req, res, userId);
+    } else if (method === HttpMethod.DELETE && path.startsWith(PATHS.users)) {
+      await deleteUserById(req, res, userId);
+    } else {
+      res.writeHead(404);
+      res.end(msgs.ENF);
+    }
+  } catch (error) {
+    console.error("Error handling request:", error);
+    res.writeHead(500);
+    res.end(errors.ISEUnexpected);
   }
 });
 

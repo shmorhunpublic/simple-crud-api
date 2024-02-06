@@ -1,54 +1,91 @@
 import { IncomingMessage, ServerResponse } from "http";
 import { v4 as uuid } from "uuid";
 import { User } from "../models/user.model.js";
-import { msgs } from "../utils/messages.js";
+import { errors, msgs } from "../utils/messages.js";
+import { isValidUuid } from "../utils/uuid.js";
 
 export const users: User[] = [];
 
-export function getAllUsers(req: IncomingMessage, res: ServerResponse) {
-  res.writeHead(200);
-  res.end(JSON.stringify(users));
+export async function getAllUsers(req: IncomingMessage, res: ServerResponse) {
+  try {
+    res.writeHead(200);
+    res.end(JSON.stringify(users));
+  } catch (error) {
+    console.error("Error in getAllUsers:", error);
+    res.writeHead(500);
+    res.end(errors.ISERetrieve);
+  }
 }
 
-export function getUserById(
+export async function getUserById(
   req: IncomingMessage,
   res: ServerResponse,
   userId: string
 ) {
-  const user = users.find((u) => u.id === userId);
-  if (user) {
-    res.writeHead(200);
-    res.end(JSON.stringify(user));
-  } else {
-    res.writeHead(404);
-    res.end(msgs.UNF);
+  try {
+    if (!isValidUuid(userId)) {
+      res.writeHead(400);
+      res.end(errors.IID);
+      return;
+    }
+
+    const user = users.find((u) => u.id === userId);
+    if (user) {
+      res.writeHead(200);
+      res.end(JSON.stringify(user));
+    } else {
+      res.writeHead(404);
+      res.end(msgs.UNF);
+    }
+  } catch (error) {
+    console.error("Error in getUserById:", error);
+    res.writeHead(500);
+    res.end(errors.ISERetrieve);
   }
 }
 
-export function createUser(req: IncomingMessage, res: ServerResponse) {
+export async function createUser(req: IncomingMessage, res: ServerResponse) {
   let body = "";
   req.on("data", (chunk) => {
     body += chunk.toString();
   });
   req.on("end", () => {
     try {
-      const newUser = JSON.parse(body);
-      newUser.id = uuid();
-      users.push(newUser);
+      const newUser: Partial<User> = JSON.parse(body);
+      // Validate required fields
+      if (
+        !newUser.username ||
+        typeof newUser.age !== "number" ||
+        !Array.isArray(newUser.hobbies)
+      ) {
+        res.writeHead(400);
+        res.end(errors.MF);
+        return;
+      }
+      // Generate ID for the new user
+      const userWithId: User = { ...newUser, id: uuid() } as User;
+      users.push(userWithId);
       res.writeHead(201);
-      res.end(JSON.stringify(newUser));
+      res.end(JSON.stringify(userWithId));
     } catch (error) {
-      res.writeHead(400);
-      res.end(msgs.IJF);
+      console.error("Error in createUser:", error);
+      res.writeHead(500);
+      res.end(errors.ISECreate);
     }
   });
 }
 
-export function updateUserById(
+export async function updateUserById(
   req: IncomingMessage,
   res: ServerResponse,
   userId: string
 ) {
+  if (!isValidUuid(userId)) {
+    res.writeHead(400);
+    res.end(JSON.stringify({ error: "Invalid userId" }));
+    return;
+  }
+
   let body = "";
   req.on("data", (chunk) => {
     body += chunk.toString();
@@ -57,26 +94,45 @@ export function updateUserById(
     const userIndex = users.findIndex((u) => u.id === userId);
     if (userIndex !== -1) {
       try {
-        const updatedUser = JSON.parse(body);
-        users[userIndex] = { ...users[userIndex], ...updatedUser };
+        const updatedUserData: Partial<User> = JSON.parse(body);
+
+        if (updatedUserData.id && updatedUserData.id !== userId) {
+          res.writeHead(400);
+          res.end(JSON.stringify({ error: "Cannot change user ID" }));
+          return;
+        }
+
+        const updatedUser: User = {
+          ...users[userIndex],
+          ...updatedUserData,
+          id: userId,
+        };
+        users[userIndex] = updatedUser;
         res.writeHead(200);
-        res.end(JSON.stringify(users[userIndex]));
+        res.end(JSON.stringify(updatedUser));
       } catch (error) {
+        console.error("Error in updateUserById:", error);
         res.writeHead(400);
-        res.end(msgs.IJF);
+        res.end(errors.IRB);
       }
     } else {
       res.writeHead(404);
-      res.end(msgs.UNF);
+      res.end(JSON.stringify({ error: "User not found" }));
     }
   });
 }
 
-export function deleteUserById(
+export async function deleteUserById(
   req: IncomingMessage,
   res: ServerResponse,
   userId: string
 ) {
+  if (!isValidUuid(userId)) {
+    res.writeHead(400);
+    res.end(errors.IID);
+    return;
+  }
+
   const userIndex = users.findIndex((u) => u.id === userId);
   if (userIndex !== -1) {
     users.splice(userIndex, 1);

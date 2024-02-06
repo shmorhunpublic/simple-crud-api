@@ -3,6 +3,7 @@ import { v4 as uuid } from "uuid";
 import { User } from "./models/user.model.js";
 import { HttpMethod } from "./utils/http.js";
 import { PATHS } from "./utils/paths.js";
+import { msgs } from "./utils/messages.js";
 const PORT = process.env.PORT || 4000;
 const users: User[] = [];
 

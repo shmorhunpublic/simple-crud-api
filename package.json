@@ -12,7 +12,19 @@
     "test": "jest"
   },
   "jest": {
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "preset": "ts-jest/presets/default-esm",
+    "moduleNameMapper": {
+      "^(\\.{1,2}/.*)\\.js$": "$1"
+    },
+    "transform": {
+      "^.+\\.ts$": [
+        "ts-jest",
+        {
+          "useESM": true
+        }
+      ]
+    }
   },
   "author": "Andrew Shmorhun",
   "license": "ISC",
@@ -22,6 +34,7 @@
     "@types/node": "^20.11.16"
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.23.9",
     "@types/supertest": "^6.0.2",
     "@types/uuid": "^9.0.8",
     "cross-env": "^7.0.3",
@@ -31,6 +44,7 @@
     "nodemon": "^3.0.3",
     "prettier": "^3.2.5",
     "supertest": "^6.3.4",
+    "ts-jest": "^29.1.2",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.3.3",
